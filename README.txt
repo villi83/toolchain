@@ -1,15 +1,19 @@
-Репозиторий: https://github.com/villi83/toolchain
+# Toolchain — сборка окружения (песочница Kimi)
 
-Состав:
--------
-- armgcc_chunks/       — чанки ARM-GCC (вы добавляете сами)
-- kicad_headless_toolkit.py — текстовые правки s-expr KiCad 10
-- bootstrap.sh         — сборка окружения в песочнице Kimi
-- py/requirements.txt  — Python-зависимости
-- py/wheels/           — папка для .whl файлов (пока пустая)
+## Состав
+- armgcc_chunks/ + reassemble.sh — ARM GCC (сборка прошивок TITAN/emelya)
+- kicad_chunks/ kicad_aa..ae — KiCad 10.0.6 AppImage, разбитый на чанки по ~100MB
+- kicad_headless_toolkit.py — s-expr правки .kicad_sch/.kicad_pcb
+- probe/, bootstrap.sh — восстановление окружения
 
-Важно:
-------
-- KiCad AppImage НЕ храним здесь — работаем только s-expr.
-- Папка py/wheels может быть пустой — Kimi скачает библиотеки сам.
-- bootstrap.sh уже настроен на username villi83.
+## KiCad из чанков (ОБЯЗАТЕЛЬНО для каждого нового чата)
+cat kicad_chunks/kicad_a* > /tmp/KiCad.AppImage && chmod +x /tmp/KiCad.AppImage
+cd /tmp && ./KiCad.AppImage --appimage-extract   # FUSE нет, только распаковка
+/tmp/squashfs-root/AppRun sch erc <проект>/titan-core.kicad_sch   # валидация ДО пуша
+
+Скачивание чанков: https://raw.githubusercontent.com/villi83/toolchain/main/kicad_chunks/kicad_aX
+(каждый чанк < 100MB, fuse-лимит /mnt/agents не касается при скачивании в /tmp)
+
+## Правило проекта (TITAN)
+Любые правки схем/плат — только после локального прогона ERC/DRC через kicad-cli.
+Баланс скобок НЕ гарантирует валидность файла (уроки v2.2.37/v2.2.41).
